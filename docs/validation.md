@@ -29,9 +29,14 @@ The first GitHub CI run passed on Ubuntu but exposed a Windows ANSI-stdin synthe
 child failure and a macOS foreground-start timeout. Child Python streams are now
 explicit UTF-8; service binding avoids reverse DNS. A regression test ensures local
 binding never calls getfqdn; startup-failure diagnostics and child cleanup were improved.
-Final matrix outcome is recorded below after verification.
+Final code commit `8688125`: all six GitHub matrix jobs passed (Windows/Linux/macOS,
+Python 3.11 and 3.14, Node 22). Each runs Python and frontend tests.
+Evidence: [successful CI run](https://github.com/vichepaev22/local-ai-project-board/actions/runs/37310047835).
+The updated downloaded clone passed 65 Python tests (1 local symlink privilege skip);
+the frontend remained 50 passing tests. Original private board health was rechecked.
 
 Not claimed: real paid-provider execution, every Hermes/Codex version, universal
 automatic harness support, OS isolation, or correctness of model-generated work.
 Forced server termination or deliberately detached tools can leave external activity;
-check it before retry. Linux/macOS runtime compatibility is subject to CI results.
+check it before retry. CI proves the tested OS/Python matrix, not live provider or
+every harness version compatibility.

@@ -21,3 +21,8 @@
 
 Author and reviewer are distinct. Workers preserve others' changes. The lead owns
 integration, acceptance, final Git commit/push and the private-data publication gate.
+
+Delivery status: all six stages completed. Public source, empty-data clean-clone
+startup/stop, independent reviews, local suites, and the six-job OS/Python CI matrix
+are verified in validation.md. Live paid-provider execution remains out of the
+verified coverage; no real project tasks were dispatched during packaging.

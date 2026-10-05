@@ -1,5 +1,7 @@
 # Local AI Project Board
 
+[![Tests](https://github.com/vichepaev22/local-ai-project-board/actions/workflows/test.yml/badge.svg)](https://github.com/vichepaev22/local-ai-project-board/actions/workflows/test.yml)
+
 A local-first project board with requests, results, history, and **optional automatic
 execution in Codex or Hermes**. Python standard library + vanilla JavaScript.
 No cloud backend, API keys in the board, npm install, or pip dependencies.
