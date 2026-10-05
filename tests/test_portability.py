@@ -13,6 +13,7 @@ import time
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import unittest
+from unittest.mock import patch
 from urllib.request import ProxyHandler, Request, build_opener
 
 
@@ -91,6 +92,13 @@ class CliTests(unittest.TestCase):
 
 
 class ForegroundLaunchTests(unittest.TestCase):
+    def test_loopback_bind_never_requests_reverse_dns(self) -> None:
+        from dashboard_service import LoopbackHTTPServer
+        with patch('socket.getfqdn', side_effect=AssertionError('DNS must not gate local startup')):
+            with LoopbackHTTPServer(('127.0.0.1', 0), BaseHTTPRequestHandler) as http:
+                self.assertEqual(http.server_name, '127.0.0.1')
+                self.assertGreater(http.server_port, 0)
+
     def test_manual_default_serves_fresh_custom_data_on_loopback(self) -> None:
         with tempfile.TemporaryDirectory(prefix="project-board-run-") as raw:
             data_dir = Path(raw) / "board-data"
@@ -111,6 +119,14 @@ class ForegroundLaunchTests(unittest.TestCase):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
+            def stop_child():
+                if process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=5)
             try:
                 deadline = time.monotonic() + 8
                 last_error: OSError | None = None
@@ -122,8 +138,11 @@ class ForegroundLaunchTests(unittest.TestCase):
                         last_error = error
                         time.sleep(0.1)
                 else:
+                    stop_child()
                     stdout, stderr = process.communicate(timeout=1)
-                    self.fail(f"manual service did not become healthy: {last_error}; stdout={stdout!r}; stderr={stderr!r}")
+                    service_log = log_dir / 'server.log'
+                    diagnostic = service_log.read_text(encoding='utf-8') if service_log.exists() else 'no service log'
+                    self.fail(f"manual service did not become healthy: {last_error}; stdout={stdout!r}; stderr={stderr!r}; log={diagnostic}")
                 self.assertEqual(status, 200)
                 self.assertTrue(health["ok"])
                 _, state = get_json(f"http://127.0.0.1:{port}/api/state")
@@ -137,11 +156,8 @@ class ForegroundLaunchTests(unittest.TestCase):
                 process.wait(timeout=5)
                 self.assertEqual(process.returncode,0)
             finally:
-                if process.poll() is None:
-                    process.terminate()
-                    process.wait(timeout=5)
-                else:
-                    process.wait(timeout=1)
+                stop_child()
+                process.wait(timeout=1)
                 if process.stdout is not None:
                     process.stdout.close()
                 if process.stderr is not None:

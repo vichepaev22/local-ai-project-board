@@ -147,6 +147,8 @@ class HermesBridgeTests(unittest.TestCase):
         self.assertNotIn("--accept-hooks", args)
         self.assertNotIn("-z", args)
         self.assertFalse(kwargs["shell"])
+        self.assertEqual(kwargs["env"]["PYTHONUTF8"], "1")
+        self.assertEqual(kwargs["env"]["PYTHONIOENCODING"], "utf-8")
         self.assertEqual(Path(kwargs["cwd"]), Path(self.temp.name))
         item = server.find_queue_item("q1")
         self.assertEqual(item["status"], "completed")
@@ -349,7 +351,7 @@ class HermesBridgeTests(unittest.TestCase):
         code="import sys,json; text=sys.stdin.read(); print(json.dumps({'type':'result','session_id':'synthetic','exit_code':0,'text':text}))"
         with patch.object(bridge,'_command',return_value=[sys.executable,'-c',code]):
             bridge.dispatch_many(['literal'])
-        self.assertEqual(server.find_queue_item('literal')['status'],'completed')
+        self.assertEqual(server.find_queue_item('literal')['status'],'completed', server.find_queue_item('literal').get('error'))
         self.assertIn('Request literal',server.find_queue_item('literal')['answerText'])
         self.queue('overflow')
         code="import sys; sys.stdin.read(); sys.stdout.write('x'*2100000); sys.stdout.flush()"

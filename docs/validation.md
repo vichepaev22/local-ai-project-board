@@ -1,7 +1,7 @@
 # Validation record — 2026-10-05
 
 Confirmed locally on Windows, Python 3.14, Node 24.11.1:
-- Python suite: 64 tests, OK, 1 skipped (Windows symlink privilege unavailable).
+- Initial local Python suite: 64 tests, OK, 1 skipped (Windows symlink privilege unavailable).
 - JavaScript suite: 50 tests passed.
 - Fresh-data foreground/background HTTP startup, occupied-port identity rejection,
   custom data directory, graceful stop, revision conflicts, static/privacy boundary,
@@ -19,6 +19,17 @@ certify all providers. Reported Hermes version/help and actual installed stream 
 are checked separately; a historical reported commit is not proof of source identity.
 Independent source review confirmed the installed Hermes single-query JSONL contract.
 Route-history preservation and neutral executor labels passed regression checks.
+
+Publication verified: the public GitHub repository and downloaded clone shared the
+same commit. The clean clone had no runtime directories before launch; manual startup
+returned empty projects/queue, and graceful stop succeeded. Clone suites: 64 Python
+tests (1 skipped), 50 JavaScript tests.
+
+The first GitHub CI run passed on Ubuntu but exposed a Windows ANSI-stdin synthetic
+child failure and a macOS foreground-start timeout. Child Python streams are now
+explicit UTF-8; service binding avoids reverse DNS. A regression test ensures local
+binding never calls getfqdn; startup-failure diagnostics and child cleanup were improved.
+Final matrix outcome is recorded below after verification.
 
 Not claimed: real paid-provider execution, every Hermes/Codex version, universal
 automatic harness support, OS isolation, or correctness of model-generated work.

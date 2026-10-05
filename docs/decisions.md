@@ -21,3 +21,6 @@
 - 2026-10-05: New project routes update only pending/active non-archived requests;
   completed, failed, interrupted and archived results retain their original route.
   Manual copying leaves requests queued: copying is not evidence of completion.
+- 2026-10-05: Hermes child environment forces UTF-8 for Python-backed stdin/JSONL;
+  no global locale/configuration changes. Local HTTP binding does not need reverse
+  DNS and must remain usable when name resolution is slow or unavailable.

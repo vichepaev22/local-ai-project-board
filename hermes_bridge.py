@@ -332,6 +332,9 @@ class HermesBridge:
                 "encoding": "utf-8",
                 "errors": "replace",
                 "shell": False,
+                # The JSONL/stdin contract is UTF-8, even on Windows locales
+                # where a Python-backed CLI would otherwise decode ANSI input.
+                "env": {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"},
             }
             if os.name == "nt":
                 process_options["creationflags"] = (

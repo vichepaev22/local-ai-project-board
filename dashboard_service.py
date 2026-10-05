@@ -4,11 +4,21 @@ from __future__ import annotations
 
 import logging
 from logging.handlers import RotatingFileHandler
+from http.server import ThreadingHTTPServer
 import os
 import signal
+from socketserver import TCPServer
 import threading
 from pathlib import Path
 import webbrowser
+
+
+class LoopbackHTTPServer(ThreadingHTTPServer):
+    """Bind the explicit loopback address without a blocking reverse-DNS lookup."""
+
+    def server_bind(self) -> None:
+        TCPServer.server_bind(self)
+        self.server_name, self.server_port = self.server_address[:2]
 
 
 def _configure_logging(log_dir: Path) -> tuple[logging.Logger, RotatingFileHandler]:
@@ -40,10 +50,11 @@ def serve(port: int, log_dir: Path, *, open_browser: bool = False) -> int:
         signal.signal(signal.SIGTERM,stop_signal)
     try:
         # Keep this import after run.py has selected runtime environment values.
-        from server import DashboardHandler, ThreadingHTTPServer, BRIDGE
+        from server import DashboardHandler, BRIDGE
 
         bridge = BRIDGE
-        http = ThreadingHTTPServer(("127.0.0.1", port), DashboardHandler)
+        log.info("Binding loopback 127.0.0.1:%s without reverse DNS", port)
+        http = LoopbackHTTPServer(("127.0.0.1", port), DashboardHandler)
         url = f"http://127.0.0.1:{port}/"
         log.info("Ready %s; saved tasks are not dispatched on startup", url)
         if open_browser:
