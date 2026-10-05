@@ -1,0 +1,17 @@
+data/
+logs/
+backups/
+__pycache__/
+*.py[cod]
+*.log
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+.DS_Store
+Thumbs.db
+.pytest_cache/
+.playwright-mcp/
+public-api-*/
+tests/project-board-hermes-*/

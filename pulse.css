@@ -1,0 +1,15 @@
+/* A soft lamp at the metric edge; text and counters never blink. */
+.execution-metric{position:relative;isolation:isolate}
+.execution-metric::before,.pulse-arrival{position:absolute;inset:-1px;border:1px solid var(--execution-ink);border-radius:inherit;pointer-events:none;opacity:0;z-index:-1;background:var(--execution-wash);box-shadow:0 0 12px 1px var(--execution-wash)}
+.execution-metric::before{content:''}
+.execution-metric.is-pulse-active{border-color:var(--execution-ink)}
+.execution-metric.is-pulse-active::before{animation:pulse-working 1.8s ease-in-out infinite}
+.pulse-arrival{box-shadow:0 0 0 2px var(--execution-wash),0 0 16px 3px var(--execution-wash)}
+.pulse-traveller{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--execution-ink);box-shadow:0 0 8px 4px var(--execution-wash);pointer-events:none;opacity:0;z-index:80}
+.pulse-update{font-size:11px;line-height:1.6;margin-top:9px;padding-left:9px;border-left:2px solid #bca574;color:#6c603f;overflow-wrap:anywhere}
+.pulse-update[data-outcome=done]{color:#49623c;border-color:#829f70}.pulse-update[data-outcome=error]{color:#984833;border-color:#bc7966}
+.pulse-return{position:fixed;right:20px;bottom:22px;z-index:35;border:1px solid #cdbb8d;border-radius:24px;padding:11px 15px;background:#fff9e9;color:#67532d;box-shadow:0 4px 18px #62502a20;font-size:12px;max-width:calc(100vw - 32px)}
+.pulse-return[hidden],.pulse-update[hidden]{display:none}
+@keyframes pulse-working{0%,100%{opacity:.08;transform:scale(.995)}50%{opacity:.72;transform:scale(1.008)}}
+html[data-motion=quiet] .pulse-traveller,html[data-keyboard=true] .pulse-traveller,.motion-paused .pulse-traveller{display:none}
+@media(prefers-reduced-motion:reduce){.execution-metric::before,.pulse-arrival,.pulse-traveller{display:none!important}}
